@@ -12,8 +12,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Centralized target names
 set(EXECUTABLE_NAME       "${PROJECT_NAME}")
-set(TEST_EXECUTABLE_NAME  "${PROJECT_NAME}_tests")
-set(STATIC_LIB_NAME       "${PROJECT_NAME}_lib")
+set(TEST_EXECUTABLE_NAME  "tests-${PROJECT_NAME}")
+set(STATIC_LIB_NAME       "lib-${PROJECT_NAME}")
 
 # Option to enable/disable tests
 option(BUILD_TESTING "Enable building tests" ON)
