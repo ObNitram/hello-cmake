@@ -26,6 +26,7 @@ Checks: >
 
   # Trop intrusif sur les noms, surtout si tu as un legacy codebase
   -readability-identifier-naming,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
 
   # Trop tatillon sur les include order / style (à adapter si tu veux)
   -llvm-header-guard,
@@ -43,7 +44,6 @@ Checks: >
 
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
-AnalyzeTemporaryDtors: true
 FormatStyle: none
 User: dev
 

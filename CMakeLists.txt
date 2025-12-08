@@ -17,7 +17,10 @@ set(CMAKE_CXX_STANDARD ${PROJECT_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Get all source files
+# ============================================================================
+# Collect all .cpp sources under src/
+# ============================================================================
+
 file(GLOB_RECURSE PROJECT_SOURCES
     CONFIGURE_DEPENDS
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -27,48 +30,36 @@ if(NOT PROJECT_SOURCES)
     message(FATAL_ERROR "No source files found in src/ directory.")
 endif()
 
-# ============================================================================
-# Split sources: library sources vs main sources
-# Here we assume that any 'main.cpp' contains the program entry point.
-# ============================================================================
+# Path to main.cpp (if it exists)
+set(MAIN_FILE "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
-set(LIB_SOURCES  "")
-set(MAIN_SOURCES "")
-
-foreach(SRC ${PROJECT_SOURCES})
-    get_filename_component(SRC_NAME "${SRC}" NAME)
-    if(SRC_NAME STREQUAL "main.cpp")
-        list(APPEND MAIN_SOURCES "${SRC}")
-    else()
-        list(APPEND LIB_SOURCES "${SRC}")
-    endif()
-endforeach()
+# Remove main.cpp from the list of sources used to build the library
+list(REMOVE_ITEM PROJECT_SOURCES "${MAIN_FILE}")
 
 # ============================================================================
-# Static library (no main)
+# Static library (all sources except main.cpp)
 # ============================================================================
 
 set(STATIC_LIB_NAME "${PROJECT_NAME}_lib")
 
-if(LIB_SOURCES)
-    add_library(${STATIC_LIB_NAME} STATIC ${LIB_SOURCES})
+if(PROJECT_SOURCES)
+    add_library(${STATIC_LIB_NAME} STATIC ${PROJECT_SOURCES})
 
     target_include_directories(${STATIC_LIB_NAME}
         PUBLIC
         "${PROJECT_SOURCE_DIR}/src"
     )
 else()
-    message(STATUS "No library sources found (all sources are main files?).")
+    message(STATUS "No library sources found (only main.cpp present?).")
 endif()
 
 # ============================================================================
-# Executable only if there is at least one main source
+# Executable (only if main.cpp exists)
 # ============================================================================
 
-if(MAIN_SOURCES)
-    add_executable(${PROJECT_NAME} ${MAIN_SOURCES})
+if(EXISTS "${MAIN_FILE}")
+    add_executable(${PROJECT_NAME} "${MAIN_FILE}")
 
-    # Link with the static library if it exists
     if(TARGET ${STATIC_LIB_NAME})
         target_link_libraries(${PROJECT_NAME}
             PRIVATE
@@ -81,5 +72,56 @@ if(MAIN_SOURCES)
         "${PROJECT_SOURCE_DIR}/src"
     )
 else()
-    message(STATUS "No main.cpp found, no executable will be built.")
+    message(STATUS "No main.cpp found in src/, no executable will be built.")
+endif()
+
+# ============================================================================
+# Tests (GoogleTest, sources in test/)
+# ============================================================================
+
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+)
+
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+include(GoogleTest)
+
+# Collect all test sources under test/
+file(GLOB_RECURSE TEST_SOURCES
+    CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/test/*.cpp"
+)
+
+if(TEST_SOURCES)
+    add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+
+    # Link tests with your static library and gtest_main (which provides main())
+    if(TARGET ${STATIC_LIB_NAME})
+        target_link_libraries(${PROJECT_NAME}_tests
+            PRIVATE
+                ${STATIC_LIB_NAME}
+                GTest::gtest_main
+        )
+    else()
+        target_link_libraries(${PROJECT_NAME}_tests
+            PRIVATE
+                GTest::gtest_main
+        )
+    endif()
+
+    target_include_directories(${PROJECT_NAME}_tests
+        PRIVATE
+            "${PROJECT_SOURCE_DIR}/src"
+            "${PROJECT_SOURCE_DIR}/test"
+    )
+
+    # Register tests with CTest
+    gtest_discover_tests(${PROJECT_NAME}_tests)
+else()
+    message(STATUS "No test sources found in test/ directory.")
 endif()

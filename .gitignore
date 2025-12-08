@@ -17,3 +17,5 @@
 
 # Temporary
 *.tmp
+
+compile_commands.json
