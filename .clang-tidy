@@ -1,0 +1,61 @@
+Checks: >
+  # Point de départ : tout désactiver
+  -*,
+
+  # --- Sécurité / bugs potentiels ---
+  bugprone-*,
+  cppcoreguidelines-*,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+
+  # --- C++ moderne / bonnes pratiques ---
+  modernize-*,
+  performance-*,
+
+  # --- Lisibilité / style général ---
+  readability-*,
+
+  # --- STL / usage standard ---
+  hicpp-*,
+
+  # --- Quelques extras utiles ---
+  misc-*,
+  portability-*,
+
+  # --- Mais on désactive certains checks trop bruyants ou inadaptés ---
+
+  # Trop intrusif sur les noms, surtout si tu as un legacy codebase
+  -readability-identifier-naming,
+
+  # Trop tatillon sur les include order / style (à adapter si tu veux)
+  -llvm-header-guard,
+  -llvm-include-order,
+
+  # Souvent trop strict / pas adapté à tous les projets
+  -hicpp-uppercase-literal-suffix,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+
+  # Eviter certains faux positifs sur le code existant
+  -bugprone-easily-swappable-parameters
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+AnalyzeTemporaryDtors: true
+FormatStyle: none
+User: dev
+
+CheckOptions:
+  # Autoriser les "magic numbers" dans certains contextes (indices, etc.)
+  - key: cppcoreguidelines-avoid-magic-numbers.IgnoredIntegerValues
+    value: '0,1,-1'
+
+  # Exemple : autoriser certains noms courts pour variables
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+
+  # Modernize: préférer std::make_unique, etc.
+  - key: modernize-use-auto.MinTypeNameLength
+    value: '5'

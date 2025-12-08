@@ -1,0 +1,19 @@
+# Build artifacts
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/*.cmake
+/build.ninja
+.cache
+
+# Editor files
+*.swp
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
