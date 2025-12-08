@@ -3,7 +3,7 @@
 #include "helloword/helloword.hpp"
 #include "helloword2/helloword.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     std::string name = (argc > 1) ? argv[1] : std::string();
     size_t steps = (argc > 2) ? std::stoul(argv[2]) : 1000000;
