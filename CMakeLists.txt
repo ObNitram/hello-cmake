@@ -1,11 +1,22 @@
 cmake_minimum_required(VERSION 3.25)
 
+# ============================================================================
 # Configuration
+# ============================================================================
+
 set(PROJECT_NAME "MyProject")
 set(PROJECT_CXX_STANDARD 20)
 
 # Export compile_commands.json for tools like clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Centralized target names
+set(EXECUTABLE_NAME       "${PROJECT_NAME}")
+set(TEST_EXECUTABLE_NAME  "${PROJECT_NAME}_tests")
+set(STATIC_LIB_NAME       "${PROJECT_NAME}_lib")
+
+# Option to enable/disable tests
+option(BUILD_TESTING "Enable building tests" ON)
 
 # ============================================================================
 # Project setup : don't edit unless you know what you're doing
@@ -40,8 +51,6 @@ list(REMOVE_ITEM PROJECT_SOURCES "${MAIN_FILE}")
 # Static library (all sources except main.cpp)
 # ============================================================================
 
-set(STATIC_LIB_NAME "${PROJECT_NAME}_lib")
-
 if(PROJECT_SOURCES)
     add_library(${STATIC_LIB_NAME} STATIC ${PROJECT_SOURCES})
 
@@ -58,16 +67,16 @@ endif()
 # ============================================================================
 
 if(EXISTS "${MAIN_FILE}")
-    add_executable(${PROJECT_NAME} "${MAIN_FILE}")
+    add_executable(${EXECUTABLE_NAME} "${MAIN_FILE}")
 
     if(TARGET ${STATIC_LIB_NAME})
-        target_link_libraries(${PROJECT_NAME}
+        target_link_libraries(${EXECUTABLE_NAME}
             PRIVATE
             ${STATIC_LIB_NAME}
         )
     endif()
 
-    target_include_directories(${PROJECT_NAME}
+    target_include_directories(${EXECUTABLE_NAME}
         PRIVATE
         "${PROJECT_SOURCE_DIR}/src"
     )
@@ -79,49 +88,54 @@ endif()
 # Tests (GoogleTest, sources in test/)
 # ============================================================================
 
-include(FetchContent)
+if(BUILD_TESTING)
+    include(FetchContent)
 
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
-)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+    )
 
-FetchContent_MakeAvailable(googletest)
+    FetchContent_MakeAvailable(googletest)
 
-enable_testing()
-include(GoogleTest)
+    enable_testing()
+    include(GoogleTest)
 
-# Collect all test sources under test/
-file(GLOB_RECURSE TEST_SOURCES
-    CONFIGURE_DEPENDS
-    "${PROJECT_SOURCE_DIR}/test/*.cpp"
-)
+    # Collect all test sources under test/
+    file(GLOB_RECURSE TEST_SOURCES
+        CONFIGURE_DEPENDS
+        "${PROJECT_SOURCE_DIR}/test/*.cpp"
+    )
 
-if(TEST_SOURCES)
-    add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+    if(TEST_SOURCES)
 
-    # Link tests with your static library and gtest_main (which provides main())
-    if(TARGET ${STATIC_LIB_NAME})
-        target_link_libraries(${PROJECT_NAME}_tests
+        # Ensure library exists, else fail
+        if(NOT TARGET ${STATIC_LIB_NAME})
+            message(FATAL_ERROR "Static library ${STATIC_LIB_NAME} was not built — tests cannot be linked.")
+        endif()
+
+        add_executable(${TEST_EXECUTABLE_NAME} ${TEST_SOURCES})
+
+        # Link tests with your static library and gtest_main (gtest provides its own main)
+        target_link_libraries(${TEST_EXECUTABLE_NAME}
             PRIVATE
                 ${STATIC_LIB_NAME}
                 GTest::gtest_main
         )
-    else()
-        target_link_libraries(${PROJECT_NAME}_tests
+
+        # Include paths for tests and source
+        target_include_directories(${TEST_EXECUTABLE_NAME}
             PRIVATE
-                GTest::gtest_main
+                "${PROJECT_SOURCE_DIR}/src"
+                "${PROJECT_SOURCE_DIR}/test"
         )
+
+        # Register tests with CTest
+        gtest_discover_tests(${TEST_EXECUTABLE_NAME})
+
+    else()
+        message(STATUS "No test sources found in test/ directory.")
     endif()
-
-    target_include_directories(${PROJECT_NAME}_tests
-        PRIVATE
-            "${PROJECT_SOURCE_DIR}/src"
-            "${PROJECT_SOURCE_DIR}/test"
-    )
-
-    # Register tests with CTest
-    gtest_discover_tests(${PROJECT_NAME}_tests)
 else()
-    message(STATUS "No test sources found in test/ directory.")
+    message(STATUS "BUILD_TESTING=OFF: tests will not be built.")
 endif()
