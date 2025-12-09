@@ -191,16 +191,6 @@ if(BUILD_BENCHMARKS)
                 "${PROJECT_SOURCE_DIR}/benchmark"
         )
 
-        # Optionally register a CTest entry to run benchmarks
-        # (Useful in CI; you can remove this block if you prefer to run benchmarks manually.)
-        if(BUILD_TESTING)
-            add_test(
-                NAME run-benchmarks
-                COMMAND ${BENCH_EXECUTABLE_NAME}
-            )
-            set_tests_properties(run-benchmarks PROPERTIES LABELS "benchmark")
-        endif()
-
     else()
         message(STATUS "No benchmark sources found in benchmark/ directory.")
     endif()
