@@ -1,0 +1,6 @@
+{
+    "lldb-dap.environment": {
+        "ASAN_OPTIONS": "detect_leaks=0",
+        "LLVM_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-18"
+    }
+}
