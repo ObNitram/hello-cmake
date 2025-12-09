@@ -1,0 +1,75 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "build.gcc.debug",
+            "inherits": "base",
+            "displayName": "GCC Debug",
+            "description": "Build using GCC in Debug mode",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "build.gcc.release",
+            "inherits": "base",
+            "displayName": "GCC Release",
+            "description": "Build using GCC in Release mode",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "build.clang.release",
+            "inherits": "base",
+            "displayName": "Clang Release",
+            "description": "Build using Clang in Release mode",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/clang",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build.gcc.debug",
+            "configurePreset": "build.gcc.debug"
+        },
+        {
+            "name": "build.gcc.release",
+            "configurePreset": "build.gcc.release"
+        },
+        {
+            "name": "build.clang.release",
+            "configurePreset": "build.clang.release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test.gcc.debug",
+            "configurePreset": "build.gcc.debug"
+        },
+        {
+            "name": "test.gcc.release",
+            "configurePreset": "build.gcc.release"
+        },
+        {
+            "name": "test.clang.release",
+            "configurePreset": "build.clang.release"
+        }
+    ]
+}

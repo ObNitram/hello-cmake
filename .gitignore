@@ -19,3 +19,5 @@
 *.tmp
 
 compile_commands.json
+
+/build.*
