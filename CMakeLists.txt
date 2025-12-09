@@ -12,11 +12,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Centralized target names
 set(EXECUTABLE_NAME       "${PROJECT_NAME}")
-set(TEST_EXECUTABLE_NAME  "tests-${PROJECT_NAME}")
 set(STATIC_LIB_NAME       "lib-${PROJECT_NAME}")
+set(TEST_EXECUTABLE_NAME  "tests-${PROJECT_NAME}")
+set(BENCH_EXECUTABLE_NAME "bench-${PROJECT_NAME}")
 
 # Option to enable/disable tests
-option(BUILD_TESTING "Enable building tests" ON)
+option(BUILD_TESTING     "Enable building tests"      ON)
+option(BUILD_BENCHMARKS  "Enable building benchmarks" ON)
 
 # ============================================================================
 # Project setup : don't edit unless you know what you're doing
@@ -27,6 +29,9 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD ${PROJECT_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# FetchContent is used for external dependencies (gtest, benchmark, ...)
+include(FetchContent)
 
 # ============================================================================
 # Collect all .cpp sources under src/
@@ -89,7 +94,6 @@ endif()
 # ============================================================================
 
 if(BUILD_TESTING)
-    include(FetchContent)
 
     FetchContent_Declare(
         googletest
@@ -138,4 +142,68 @@ if(BUILD_TESTING)
     endif()
 else()
     message(STATUS "BUILD_TESTING=OFF: tests will not be built.")
+endif()
+
+# ============================================================================
+# Benchmarks (Google Benchmark, sources in benchmark/)
+# ============================================================================
+
+if(BUILD_BENCHMARKS)
+
+    # Disable Google Benchmark's own tests (we only want the library)
+    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable google benchmark tests" FORCE)
+
+    # Fetch Google Benchmark. You can pin to a specific release tag.
+    FetchContent_Declare(
+        googlebenchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG        v1.9.4            # Change to a specific release if you prefer
+    )
+
+    FetchContent_MakeAvailable(googlebenchmark)
+
+    # Collect all benchmark sources under benchmark/
+    file(GLOB_RECURSE BENCHMARK_SOURCES
+        CONFIGURE_DEPENDS
+        "${PROJECT_SOURCE_DIR}/benchmark/*.cpp"
+    )
+
+    if(BENCHMARK_SOURCES)
+
+        # Ensure library exists, else fail
+        if(NOT TARGET ${STATIC_LIB_NAME})
+            message(FATAL_ERROR "Static library ${STATIC_LIB_NAME} was not built — benchmarks cannot be linked.")
+        endif()
+
+        # Build a single benchmark executable with all benchmark sources
+        add_executable(${BENCH_EXECUTABLE_NAME} ${BENCHMARK_SOURCES})
+
+        target_link_libraries(${BENCH_EXECUTABLE_NAME}
+            PRIVATE
+                ${STATIC_LIB_NAME}
+                benchmark::benchmark_main
+        )
+
+        target_include_directories(${BENCH_EXECUTABLE_NAME}
+            PRIVATE
+                "${PROJECT_SOURCE_DIR}/src"
+                "${PROJECT_SOURCE_DIR}/benchmark"
+        )
+
+        # Optionally register a CTest entry to run benchmarks
+        # (Useful in CI; you can remove this block if you prefer to run benchmarks manually.)
+        if(BUILD_TESTING)
+            add_test(
+                NAME run-benchmarks
+                COMMAND ${BENCH_EXECUTABLE_NAME}
+            )
+            set_tests_properties(run-benchmarks PROPERTIES LABELS "benchmark")
+        endif()
+
+    else()
+        message(STATUS "No benchmark sources found in benchmark/ directory.")
+    endif()
+
+else()
+    message(STATUS "BUILD_BENCHMARKS=OFF: benchmarks will not be built.")
 endif()
