@@ -97,7 +97,8 @@ if(BUILD_TESTING)
 
     FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        v1.17.0
     )
 
     FetchContent_MakeAvailable(googletest)
@@ -157,7 +158,7 @@ if(BUILD_BENCHMARKS)
     FetchContent_Declare(
         googlebenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG        v1.9.4            # Change to a specific release if you prefer
+        GIT_TAG        v1.9.4
     )
 
     FetchContent_MakeAvailable(googlebenchmark)
