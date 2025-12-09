@@ -22,6 +22,17 @@
             }
         },
         {
+            "name": "build.clang.debug",
+            "inherits": "base",
+            "displayName": "Clang Debug",
+            "description": "Build using Clang in Debug mode",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/clang",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
             "name": "build.gcc.release",
             "inherits": "base",
             "displayName": "GCC Release",
@@ -50,6 +61,10 @@
             "configurePreset": "build.gcc.debug"
         },
         {
+            "name": "build.clang.debug",
+            "configurePreset": "build.clang.debug"
+        },
+        {
             "name": "build.gcc.release",
             "configurePreset": "build.gcc.release"
         },
@@ -62,6 +77,10 @@
         {
             "name": "test.gcc.debug",
             "configurePreset": "build.gcc.debug"
+        },
+        {
+            "name": "test.clang.debug",
+            "configurePreset": "build.clang.debug"
         },
         {
             "name": "test.gcc.release",
