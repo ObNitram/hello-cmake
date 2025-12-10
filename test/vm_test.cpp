@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <sstream>
 
 #include "vm/simple_vm.hpp"
 
@@ -18,10 +19,14 @@ std::vector<vm::Instruction> make_add_program(int lhs, int rhs)
 
 TEST(SimpleVM, AddsAndPrints)
 {
-    vm::SimpleVM vm;
+    std::ostringstream output_buf;
+    auto vm = vm::SimpleVM(output_buf);
+
     auto outputs = vm.run(make_add_program(5, 8));
+
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0], 13);
+    EXPECT_EQ(output_buf.str(), "13");
 }
 
 TEST(SimpleVM, SubMulDiv)
@@ -38,10 +43,14 @@ TEST(SimpleVM, SubMulDiv)
         {vm::OpCode::Halt,      0 }
     };
 
-    vm::SimpleVM vm;
+    std::ostringstream output_buf;
+    auto vm = vm::SimpleVM(output_buf);
+
     auto outputs = vm.run(program);
+    
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0], 2);
+    EXPECT_EQ(output_buf.str(), "2");
 }
 
 TEST(SimpleVM, DivisionByZeroThrows)

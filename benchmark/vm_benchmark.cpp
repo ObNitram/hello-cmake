@@ -1,9 +1,34 @@
 #include <benchmark/benchmark.h>
+#include <ostream>
+#include <streambuf>
 
 #include "vm/simple_vm.hpp"
 
 namespace
 {
+
+// A stream buffer that discards all output
+class null_streambuf : public std::streambuf
+{
+  protected:
+    // Ignore characters by pretending the write succeeded
+    int overflow(int c) override
+    {
+        return traits_type::not_eof(c); // Indicate success
+    }
+};
+
+class null_ostream : public std::ostream
+{
+  public:
+    null_ostream() : std::ostream(&m_buf) {}
+
+  private:
+    null_streambuf m_buf;
+};
+
+null_ostream devnull;
+
 std::vector<vm::Instruction> make_linear_sum_program(int count)
 {
     std::vector<vm::Instruction> program;
@@ -15,7 +40,6 @@ std::vector<vm::Instruction> make_linear_sum_program(int count)
         program.push_back({vm::OpCode::PushConst, i});
         program.push_back({vm::OpCode::Add, 0});
     }
-    program.push_back({vm::OpCode::Print, 0});
     program.push_back({vm::OpCode::Halt, 0});
     return program;
 }
@@ -23,7 +47,7 @@ std::vector<vm::Instruction> make_linear_sum_program(int count)
 
 static void BM_SimpleVM_AddLoop(benchmark::State &state)
 {
-    vm::SimpleVM vm;
+    vm::SimpleVM vm = vm::SimpleVM(devnull);
     const auto program = make_linear_sum_program(static_cast<int>(state.range(0)));
 
     for (auto _ : state)
