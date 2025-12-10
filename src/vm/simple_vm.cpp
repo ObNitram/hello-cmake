@@ -26,7 +26,11 @@ std::vector<int> SimpleVM::run(const std::vector<Instruction> &program)
         const Instruction &instr = program[ip];
         switch (instr.op)
         {
-        case OpCode::PushConst: stack.push_back(instr.operand); break;
+        case OpCode::PushConst:
+        {
+            stack.push_back(instr.operand);
+            break;
+        }
         case OpCode::Add:
         {
             int rhs = pop_stack(stack);

@@ -8,7 +8,6 @@
 namespace vm
 {
 
-// Minimal instruction set for a tiny stack-based VM.
 enum class OpCode : std::uint8_t
 {
     PushConst,
