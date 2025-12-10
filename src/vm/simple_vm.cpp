@@ -1,6 +1,5 @@
 #include "vm/simple_vm.hpp"
 
-#include <iostream>
 #include <stdexcept>
 
 namespace vm
@@ -61,7 +60,8 @@ std::vector<int> SimpleVM::run(const std::vector<Instruction> &program)
         {
             int value = pop_stack(stack);
             outputs.push_back(value);
-            std::cout << "[vm] " << value << "\n";
+
+            output_buf_ << value;
             break;
         }
         case OpCode::Halt: return outputs;

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
+#include <ostream>
 #include <vector>
 
 namespace vm
@@ -20,13 +22,19 @@ enum class OpCode : std::uint8_t
 
 struct Instruction
 {
-    OpCode op{OpCode::Halt};
+    OpCode op{0};
     int operand{0};
 };
 
 class SimpleVM
 {
+  private:
+    std::ostream &output_buf_;
+
   public:
+    SimpleVM() : output_buf_(std::cerr) {}
+    explicit SimpleVM(std::ostream &output_buf) : output_buf_(output_buf) {}
+
     // Execute program and return all values produced by Print.
     std::vector<int> run(const std::vector<Instruction> &program);
 };
