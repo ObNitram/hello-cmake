@@ -9,4 +9,13 @@ AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 
+AlignArrayOfStructures: Left
+
+# Put argument and parameter lists on multiple lines if they don't fit on a single line
+BinPackArguments: true
+BinPackParameters: true
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+
 BreakBeforeBraces: Allman
