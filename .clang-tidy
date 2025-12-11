@@ -41,6 +41,10 @@ Checks: >
 
   # Eviter certains faux positifs sur le code existant
   -bugprone-easily-swappable-parameters
+  
+  modernize-use-braced-init-list,
+  modernize-use-default-member-init,
+  bugprone-init-list-initialize
 
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
@@ -59,3 +63,4 @@ CheckOptions:
   # Modernize: préférer std::make_unique, etc.
   - key: modernize-use-auto.MinTypeNameLength
     value: '5'
+

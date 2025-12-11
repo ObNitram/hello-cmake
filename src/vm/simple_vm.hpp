@@ -27,10 +27,10 @@ struct Instruction
 
 class SimpleVM
 {
-  private:
+private:
     std::ostream &output_buf_;
 
-  public:
+public:
     SimpleVM() : output_buf_(std::cerr) {}
     explicit SimpleVM(std::ostream &output_buf) : output_buf_(output_buf) {}
 

@@ -10,7 +10,7 @@ namespace
 // A stream buffer that discards all output
 class null_streambuf : public std::streambuf
 {
-  protected:
+protected:
     // Ignore characters by pretending the write succeeded
     int overflow(int c) override
     {
@@ -20,10 +20,10 @@ class null_streambuf : public std::streambuf
 
 class null_ostream : public std::ostream
 {
-  public:
+public:
     null_ostream() : std::ostream(&m_buf) {}
 
-  private:
+private:
     null_streambuf m_buf;
 };
 

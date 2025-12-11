@@ -47,7 +47,7 @@ TEST(SimpleVM, SubMulDiv)
     auto vm = vm::SimpleVM(output_buf);
 
     auto outputs = vm.run(program);
-    
+
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0], 2);
     EXPECT_EQ(output_buf.str(), "2");
