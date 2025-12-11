@@ -48,7 +48,8 @@ std::vector<vm::Instruction> make_linear_sum_program(int count)
 static void BM_SimpleVM_AddLoop(benchmark::State &state)
 {
     vm::SimpleVM vm;
-    const auto program = make_linear_sum_program(static_cast<int>(state.range(0)));
+    const auto program =
+        make_linear_sum_program(static_cast<int>(state.range(0)));
 
     for (auto _ : state)
     {

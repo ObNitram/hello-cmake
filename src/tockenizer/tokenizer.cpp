@@ -11,7 +11,9 @@ std::vector<Token> tokenize(const std::string &input)
     size_t i = 0;
     const size_t n = input.size();
 
-    auto make_token = [&](TokenType type, const std::string &text = std::string(), double number = 0.0)
+    auto make_token = [&](TokenType type,
+                          const std::string &text = std::string(),
+                          double number = 0.0)
     {
         Token t;
         t.type = type;
@@ -29,7 +31,8 @@ std::vector<Token> tokenize(const std::string &input)
             continue;
         }
 
-        if (std::isdigit(c) || (c == '.' && i + 1 < n && std::isdigit(input[i + 1])))
+        if (std::isdigit(c) ||
+            (c == '.' && i + 1 < n && std::isdigit(input[i + 1])))
         {
             // Parse number (int or float)
             size_t start = i;
@@ -39,24 +42,32 @@ std::vector<Token> tokenize(const std::string &input)
                 has_dot = true;
                 ++i;
             }
-            while (i < n && std::isdigit(static_cast<unsigned char>(input[i]))) ++i;
+            while (i < n && std::isdigit(static_cast<unsigned char>(input[i])))
+                ++i;
             if (i < n && input[i] == '.')
             {
-                if (has_dot) throw std::runtime_error("Invalid numeric literal: multiple decimal points");
+                if (has_dot)
+                    throw std::runtime_error(
+                        "Invalid numeric literal: multiple decimal points");
                 has_dot = true;
                 ++i;
-                while (i < n && std::isdigit(static_cast<unsigned char>(input[i]))) ++i;
+                while (i < n &&
+                       std::isdigit(static_cast<unsigned char>(input[i])))
+                    ++i;
             }
 
             std::string lex = input.substr(start, i - start);
             try
             {
                 double val = std::stod(lex);
-                make_token(has_dot ? TokenType::Float : TokenType::Int, lex, val);
+                make_token(has_dot ? TokenType::Float : TokenType::Int, lex,
+                           val);
             }
             catch (const std::exception &e)
             {
-                throw std::runtime_error(std::string("Failed to parse numeric literal: ") + e.what());
+                throw std::runtime_error(
+                    std::string("Failed to parse numeric literal: ") +
+                    e.what());
             }
 
             continue;

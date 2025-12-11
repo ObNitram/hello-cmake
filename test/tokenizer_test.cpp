@@ -43,4 +43,7 @@ TEST(Tokenizer, LeadingDotFloat)
     EXPECT_NEAR(tokens[2].number, 0.25, 1e-12);
 }
 
-TEST(Tokenizer, InvalidCharacterThrows) { EXPECT_THROW(tokenizer::tokenize("1 & 2"), std::runtime_error); }
+TEST(Tokenizer, InvalidCharacterThrows)
+{
+    EXPECT_THROW(tokenizer::tokenize("1 & 2"), std::runtime_error);
+}

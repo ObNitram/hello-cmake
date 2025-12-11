@@ -27,7 +27,8 @@ struct Token
     double number{0.0};
 };
 
-// Tokenize an input string into tokens. Throws std::runtime_error on invalid characters.
+// Tokenize an input string into tokens. Throws std::runtime_error on invalid
+// characters.
 std::vector<Token> tokenize(const std::string &input);
 
 } // namespace tokenizer
