@@ -20,3 +20,12 @@ AllowAllParametersOfDeclarationOnNextLine: false
 
 BreakBeforeBraces: Allman
 AccessModifierOffset: -4
+
+IncludeCategories:
+  - Regex: '^<.*>$'
+    Priority: 1
+  - Regex: '.*'
+    Priority: 2
+
+SortIncludes: true
+
