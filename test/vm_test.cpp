@@ -20,9 +20,9 @@ std::vector<vm::Instruction> make_add_program(int lhs, int rhs)
 TEST(SimpleVM, AddsAndPrints)
 {
     std::ostringstream output_buf;
-    auto vm = vm::SimpleVM(output_buf);
+    vm::SimpleVM vm;
 
-    auto outputs = vm.run(make_add_program(5, 8));
+    auto outputs = vm.run(make_add_program(5, 8), output_buf);
 
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0], 13);
@@ -44,9 +44,9 @@ TEST(SimpleVM, SubMulDiv)
     };
 
     std::ostringstream output_buf;
-    auto vm = vm::SimpleVM(output_buf);
+    vm::SimpleVM vm;
 
-    auto outputs = vm.run(program);
+    auto outputs = vm.run(program, output_buf);
 
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0], 2);
@@ -62,7 +62,8 @@ TEST(SimpleVM, DivisionByZeroThrows)
     };
 
     vm::SimpleVM vm;
-    EXPECT_THROW(vm.run(program), std::runtime_error);
+    std::ostringstream output_buf;
+    EXPECT_THROW(vm.run(program, output_buf), std::runtime_error);
 }
 
 TEST(SimpleVM, StackUnderflowThrows)
@@ -72,5 +73,6 @@ TEST(SimpleVM, StackUnderflowThrows)
     };
 
     vm::SimpleVM vm;
-    EXPECT_THROW(vm.run(program), std::runtime_error);
+    std::ostringstream output_buf;
+    EXPECT_THROW(vm.run(program, output_buf), std::runtime_error);
 }

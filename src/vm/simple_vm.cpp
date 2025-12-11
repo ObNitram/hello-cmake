@@ -16,7 +16,7 @@ int pop_stack(std::vector<int> &stack)
 }
 } // namespace
 
-std::vector<int> SimpleVM::run(const std::vector<Instruction> &program)
+std::vector<int> SimpleVM::run(const std::vector<Instruction> &program, std::ostream &output_buf)
 {
     std::vector<int> stack;
     std::vector<int> outputs;
@@ -65,7 +65,7 @@ std::vector<int> SimpleVM::run(const std::vector<Instruction> &program)
             int value = pop_stack(stack);
             outputs.push_back(value);
 
-            output_buf_ << value;
+            output_buf << value;
             break;
         }
         case OpCode::Halt: return outputs;

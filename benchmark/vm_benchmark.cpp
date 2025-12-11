@@ -47,12 +47,12 @@ std::vector<vm::Instruction> make_linear_sum_program(int count)
 
 static void BM_SimpleVM_AddLoop(benchmark::State &state)
 {
-    vm::SimpleVM vm = vm::SimpleVM(devnull);
+    vm::SimpleVM vm;
     const auto program = make_linear_sum_program(static_cast<int>(state.range(0)));
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(vm.run(program));
+        benchmark::DoNotOptimize(vm.run(program, devnull));
     }
 }
 BENCHMARK(BM_SimpleVM_AddLoop)->RangeMultiplier(10)->Range(10, 10000);

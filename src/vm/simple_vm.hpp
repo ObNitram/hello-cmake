@@ -27,15 +27,12 @@ struct Instruction
 
 class SimpleVM
 {
-private:
-    std::ostream &output_buf_;
-
 public:
-    SimpleVM() : output_buf_(std::cerr) {}
-    explicit SimpleVM(std::ostream &output_buf) : output_buf_(output_buf) {}
+    SimpleVM() = default;
 
     // Execute program and return all values produced by Print.
-    std::vector<int> run(const std::vector<Instruction> &program);
+    // The output stream is provided per-run so callers can capture or discard output.
+    std::vector<int> run(const std::vector<Instruction> &program, std::ostream &output_buf);
 };
 
 } // namespace vm

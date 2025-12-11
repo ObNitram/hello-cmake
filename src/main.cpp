@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     };
 
     std::cout << "Running tiny VM program:\n";
-    vm::SimpleVM vm = vm::SimpleVM();
-    vm.run(program);
+    vm::SimpleVM vm;
+    vm.run(program, std::cout);
     return 0;
 }
