@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <sstream>
 
+#include "utils/dev_null.hpp"
 #include "vm/simple_vm.hpp"
 
 namespace
@@ -11,7 +11,6 @@ std::vector<vm::Instruction> make_add_program(int lhs, int rhs)
         {vm::OpCode::PushConst, lhs},
         {vm::OpCode::PushConst, rhs},
         {vm::OpCode::Add,       0  },
-        {vm::OpCode::Print,     0  },
         {vm::OpCode::Halt,      0  }
     };
 }
@@ -19,14 +18,11 @@ std::vector<vm::Instruction> make_add_program(int lhs, int rhs)
 
 TEST(SimpleVM, AddsAndPrints)
 {
-    std::ostringstream output_buf;
     vm::SimpleVM vm;
 
-    auto outputs = vm.run(make_add_program(5, 8), output_buf);
+    auto outputs = vm.run(make_add_program(5, 8), utils::devnull);
 
-    ASSERT_EQ(outputs.size(), 1u);
-    EXPECT_EQ(outputs[0], 13);
-    EXPECT_EQ(output_buf.str(), "13");
+    EXPECT_EQ(outputs, 13);
 }
 
 TEST(SimpleVM, SubMulDiv)
@@ -39,18 +35,14 @@ TEST(SimpleVM, SubMulDiv)
         {vm::OpCode::Mul,       0 }, // 4 * 3 = 12
         {vm::OpCode::PushConst, 10},
         {vm::OpCode::Sub,       0 }, // 12 - 10 = 2
-        {vm::OpCode::Print,     0 },
         {vm::OpCode::Halt,      0 }
     };
 
-    std::ostringstream output_buf;
     vm::SimpleVM vm;
 
-    auto outputs = vm.run(program, output_buf);
+    auto outputs = vm.run(program, utils::devnull);
 
-    ASSERT_EQ(outputs.size(), 1u);
-    EXPECT_EQ(outputs[0], 2);
-    EXPECT_EQ(output_buf.str(), "2");
+    EXPECT_EQ(outputs, 2);
 }
 
 TEST(SimpleVM, DivisionByZeroThrows)
@@ -62,8 +54,7 @@ TEST(SimpleVM, DivisionByZeroThrows)
     };
 
     vm::SimpleVM vm;
-    std::ostringstream output_buf;
-    EXPECT_THROW(vm.run(program, output_buf), std::runtime_error);
+    EXPECT_THROW(vm.run(program, utils::devnull), std::runtime_error);
 }
 
 TEST(SimpleVM, StackUnderflowThrows)
@@ -73,6 +64,5 @@ TEST(SimpleVM, StackUnderflowThrows)
     };
 
     vm::SimpleVM vm;
-    std::ostringstream output_buf;
-    EXPECT_THROW(vm.run(program, output_buf), std::runtime_error);
+    EXPECT_THROW(vm.run(program, utils::devnull), std::runtime_error);
 }

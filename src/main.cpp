@@ -13,7 +13,6 @@ int main(int argc, char **argv)
         {.op = vm::OpCode::Add,       .operand = 0},
         {.op = vm::OpCode::PushConst, .operand = 4},
         {.op = vm::OpCode::Mul,       .operand = 0},
-        {.op = vm::OpCode::Print,     .operand = 0},
         {.op = vm::OpCode::Halt,      .operand = 0}
     };
 

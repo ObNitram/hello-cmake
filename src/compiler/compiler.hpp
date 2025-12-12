@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <vector>
 
 #include "parcer/parser.hpp"
@@ -9,12 +8,7 @@
 namespace compiler
 {
 
-using Bytecode = std::vector<vm::Instruction>;
-
-// Emit bytecode for a previously built AST.
-Bytecode compile(const parser::Node &node);
-
-// Convenience helper: tokenize, parse, then compile an expression.
-Bytecode compile_expression(const std::string &input);
+// Emit std::vector<vm::Instruction> for a previously built AST.
+std::vector<vm::Instruction> compile(const parser::Node &node);
 
 } // namespace compiler

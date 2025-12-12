@@ -21,7 +21,7 @@ vm::OpCode token_to_opcode(tokenizer::TokenType op)
     }
 }
 
-Bytecode compile_node(const parser::Node &node)
+std::vector<vm::Instruction> compile_node(const parser::Node &node)
 {
     switch (node.type())
     {
@@ -29,7 +29,7 @@ Bytecode compile_node(const parser::Node &node)
     {
         auto *num = dynamic_cast<const parser::NumberNode *>(&node);
         if (!num) throw std::runtime_error("Number node expected");
-        return Bytecode{
+        return std::vector<vm::Instruction>{
             {vm::OpCode::PushConst, number_to_operand(num->value())}
         };
     }
@@ -38,8 +38,9 @@ Bytecode compile_node(const parser::Node &node)
         auto *binary = dynamic_cast<const parser::BinaryNode *>(&node);
         if (!binary) throw std::runtime_error("Binary node expected");
 
-        Bytecode instructions = compile_node(*binary->left());
-        Bytecode rhs = compile_node(*binary->right());
+        std::vector<vm::Instruction> instructions =
+            compile_node(*binary->left());
+        std::vector<vm::Instruction> rhs = compile_node(*binary->right());
         instructions.insert(instructions.end(), rhs.begin(), rhs.end());
         instructions.push_back({token_to_opcode(binary->op()), 0});
         return instructions;
@@ -49,17 +50,11 @@ Bytecode compile_node(const parser::Node &node)
 }
 } // namespace
 
-Bytecode compile(const parser::Node &node)
+std::vector<vm::Instruction> compile(const parser::Node &node)
 {
-    Bytecode code = compile_node(node);
+    std::vector<vm::Instruction> code = compile_node(node);
+    code.push_back({vm::OpCode::Halt, 0});
     return code;
-}
-
-Bytecode compile_expression(const std::string &input)
-{
-    auto tokens = tokenizer::tokenize(input);
-    auto ast = parser::parse_tokens(tokens);
-    return compile(*ast);
 }
 
 } // namespace compiler

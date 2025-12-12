@@ -25,6 +25,12 @@ struct Token
     TokenType type{TokenType::End};
     std::string text;
     double number{0.0};
+
+    bool operator==(const Token &other) const
+    {
+        return type == other.type && text == other.text &&
+               number == other.number;
+    }
 };
 
 // Tokenize an input string into tokens. Throws std::runtime_error on invalid

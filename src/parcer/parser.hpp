@@ -48,6 +48,8 @@ public:
     const Node *right() const;
     Node *right();
 
+    bool operator==(const BinaryNode &other) const;
+
 private:
     tokenizer::TokenType op_;
     std::unique_ptr<Node> left_;

@@ -1,5 +1,6 @@
 #include "vm/simple_vm.hpp"
 
+#include <cstdint>
 #include <stdexcept>
 
 namespace vm
@@ -16,11 +17,10 @@ int pop_stack(std::vector<int> &stack)
 }
 } // namespace
 
-std::vector<int> SimpleVM::run(const std::vector<Instruction> &program,
-                               std::ostream &output_buf)
+std::int32_t SimpleVM::run(const std::vector<Instruction> &program,
+                           std::ostream &output_buf)
 {
-    std::vector<int> stack;
-    std::vector<int> outputs;
+    std::vector<int32_t> stack;
 
     for (std::size_t ip = 0; ip < program.size(); ++ip)
     {
@@ -61,20 +61,17 @@ std::vector<int> SimpleVM::run(const std::vector<Instruction> &program,
             stack.push_back(lhs / rhs);
             break;
         }
-        case OpCode::Print:
+        case OpCode::Halt:
         {
-            int value = pop_stack(stack);
-            outputs.push_back(value);
-
-            output_buf << value;
-            break;
+            if (stack.empty())
+                throw std::runtime_error("Stack underflow on halt");
+            return stack.back();
         }
-        case OpCode::Halt: return outputs;
         default: throw std::runtime_error("Unknown opcode");
         }
     }
 
-    return outputs;
+    return 1;
 }
 
 } // namespace vm

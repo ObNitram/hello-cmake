@@ -15,7 +15,6 @@ enum class OpCode : std::uint8_t
     Sub,
     Mul,
     Div,
-    Print,
     Halt
 };
 
@@ -23,18 +22,23 @@ struct Instruction
 {
     OpCode op{0};
     int operand{0};
+
+    bool operator==(const Instruction &other) const
+    {
+        return op == other.op && operand == other.operand;
+    }
 };
 
 class SimpleVM
 {
 public:
-    SimpleVM() = default;
+    explicit SimpleVM() = default;
 
     // Execute program and return all values produced by Print.
     // The output stream is provided per-run so callers can capture or discard
     // output.
-    std::vector<int> run(const std::vector<Instruction> &program,
-                         std::ostream &output_buf);
+    std::int32_t run(const std::vector<Instruction> &program,
+                     std::ostream &output_buf);
 };
 
 } // namespace vm
