@@ -110,3 +110,60 @@ TEST(Chain, Program_3)
     auto result = vm.run(program, utils::devnull);
     EXPECT_EQ(result, 6);
 }
+
+TEST(Chain, Program_4)
+{
+    std::string expression =
+        "((1535 + 4322) * (3233 + 4235)) / 454365"; // (5857 * 7468) / 454365 =
+                                                    // 43740076 / 454365 = 96
+    auto tockens = tokenizer::tokenize(expression);
+    EXPECT_EQ(tockens, std::vector<tokenizer::Token>({
+                           {tokenizer::TokenType::LParen, "(",      0     },
+                           {tokenizer::TokenType::LParen, "(",      0     },
+                           {tokenizer::TokenType::Int,    "1535",   1535  },
+                           {tokenizer::TokenType::Plus,   "+",      0     },
+                           {tokenizer::TokenType::Int,    "4322",   4322  },
+                           {tokenizer::TokenType::RParen, ")",      0     },
+                           {tokenizer::TokenType::Mul,    "*",      0     },
+                           {tokenizer::TokenType::LParen, "(",      0     },
+                           {tokenizer::TokenType::Int,    "3233",   3233  },
+                           {tokenizer::TokenType::Plus,   "+",      0     },
+                           {tokenizer::TokenType::Int,    "4235",   4235  },
+                           {tokenizer::TokenType::RParen, ")",      0     },
+                           {tokenizer::TokenType::RParen, ")",      0     },
+                           {tokenizer::TokenType::Div,    "/",      0     },
+                           {tokenizer::TokenType::Int,    "454365", 454365},
+                           {tokenizer::TokenType::End,    "",       0     }
+    }));
+
+    auto ast = parser::parse_tokens(tockens);
+    auto program = compiler::compile(*ast);
+    EXPECT_EQ(program, std::vector<vm::Instruction>({
+                           {vm::OpCode::PushConst, 1535  },
+                           {vm::OpCode::PushConst, 4322  },
+                           {vm::OpCode::Add,       0     },
+                           {vm::OpCode::PushConst, 3233  },
+                           {vm::OpCode::PushConst, 4235  },
+                           {vm::OpCode::Add,       0     },
+                           {vm::OpCode::Mul,       0     },
+                           {vm::OpCode::PushConst, 454365},
+                           {vm::OpCode::Div,       0     },
+                           {vm::OpCode::Halt,      0     }
+    }));
+    vm::SimpleVM vm{};
+    auto result = vm.run(program, utils::devnull);
+    EXPECT_EQ(result, 96);
+}
+
+TEST(Chain, Program_5)
+{
+    std::string expression = "7 + 3 * (10 / (12 / (3 + 1) - 1))"; // 22
+    auto tockens = tokenizer::tokenize(expression);
+
+    auto ast = parser::parse_tokens(tockens);
+    auto program = compiler::compile(*ast);
+
+    vm::SimpleVM vm{};
+    auto result = vm.run(program, utils::devnull);
+    EXPECT_EQ(result, 22);
+}
